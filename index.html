@@ -70,6 +70,7 @@
             display: flex;
             flex-direction: column;
             min-width: 0;
+            position: relative;
         }
 
         .control-group {
@@ -421,30 +422,6 @@
             color: #333;
         }
 
-        .download-btn {
-            padding: 12px;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s;
-            display: none;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .download-btn.show {
-            display: block;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
-        }
-
         .canvas-container {
             flex: 1;
             display: flex;
@@ -492,18 +469,6 @@
             border: 1px solid #e0e0e0;
         }
 
-        .section-title {
-            font-size: 0.8rem;
-            color: #667eea;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
         .advanced-section {
             background: #f8f9fa;
             border-radius: 12px;
@@ -533,6 +498,76 @@
 
         .chevron.rotate {
             transform: rotate(180deg);
+        }
+
+        /* Download Button - Floating on Preview */
+        .download-btn-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: none;
+        }
+
+        .download-btn-container.show {
+            display: block;
+        }
+
+        .download-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(17, 153, 142, 0.5);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Alternative: Top right download button */
+        .download-btn-top {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn-top.show {
+            display: flex;
+        }
+
+        .download-btn-top:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         @media (max-width: 900px) {
@@ -566,7 +601,7 @@
 
             .preview-section {
                 order: 1;
-                height: 50vh;
+                height: 60vh;
                 min-height: 400px;
                 padding: 15px;
             }
@@ -581,6 +616,15 @@
 
             .position-grid {
                 width: 100px;
+            }
+
+            .download-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .download-btn-container {
+                bottom: 20px;
             }
         }
 
@@ -705,7 +749,7 @@
                     </div>
                 </div>
 
-                <!-- Advanced Options - Luôn hiển thị -->
+                <!-- Advanced Options -->
                 <div class="advanced-section">
                     <div class="advanced-header" onclick="toggleAdvanced()">
                         <span>⚙️ Tùy chỉnh nâng cao</span>
@@ -826,15 +870,14 @@
                         </div>
                     </div>
                 </div>
-
-                <button class="download-btn" id="downloadBtn" onclick="downloadWallpaper()">
-                    ⬇️ Tải xuống
-                </button>
             </div>
 
             <div class="preview-section">
                 <div class="preview-header">
                     <div class="preview-title">👁️ Xem trước</div>
+                    <button class="download-btn-top" id="downloadBtnTop" onclick="downloadWallpaper()">
+                        ⬇️ Tải xuống
+                    </button>
                 </div>
                 <div class="canvas-container" id="canvasContainer">
                     <div class="empty-state" id="emptyState">
@@ -846,6 +889,14 @@
                         <p>Chọn cả hình nền và TKB<br>để xem trước</p>
                     </div>
                     <canvas id="previewCanvas" style="display: none;"></canvas>
+                    
+                    <!-- Floating Download Button -->
+                    <div class="download-btn-container" id="downloadBtnContainer">
+                        <button class="download-btn" onclick="downloadWallpaper()">
+                            <span>⬇️</span>
+                            <span>Tải xuống</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1185,7 +1236,10 @@
             
             document.getElementById('emptyState').style.display = 'none';
             canvas.style.display = 'block';
-            document.getElementById('downloadBtn').classList.add('show');
+            
+            // Show both download buttons
+            document.getElementById('downloadBtnContainer').classList.add('show');
+            document.getElementById('downloadBtnTop').classList.add('show');
             
             isGenerating = false;
         }
