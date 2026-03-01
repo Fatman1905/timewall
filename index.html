@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Wallpaper Thời Khóa Biểu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .preview-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .ratio-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .ratio-btn {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .ratio-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .ratio-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 120px;
+            margin: 10px auto;
+        }
+
+        .pos-btn {
+            aspect-ratio: 1;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .pos-btn:hover {
+            border-color: #667eea;
+        }
+
+        .pos-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .preview-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 600px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .download-btn {
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn.show {
+            display: block;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            background: #f5f5f5;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            max-height: 80vh;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 60px;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .advanced-options {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e0e0e0;
+        }
+
+        .toggle-advanced {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .advanced-content {
+            display: none;
+        }
+
+        .advanced-content.show {
+            display: block;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        @media (max-width: 968px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-panel {
+                position: static;
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Wallpaper Generator</h1>
+        <p class="subtitle">Tạo wallpaper thời khóa biểu độc đáo cho điện thoại của bạn</p>
+        
+        <div class="main-layout">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">📱 1. Chọn tỉ lệ màn hình</label>
+                    <select id="ratioSelect">
+                        <option value="custom">Tùy chỉnh...</option>
+                        <option value="9/20" selected>20:9 (Ultra-wide)</option>
+                        <option value="9/19.5">19.5:9 (iPhone X+)</option>
+                        <option value="9/19">19:9 (Android phổ thông)</option>
+                        <option value="9/18">18:9 (Full HD+)</option>
+                        <option value="2/3">3:2 (iPad)</option>
+                        <option value="3/4">4:3 (Tablet)</option>
+                        <option value="9/16">16:9 (Full HD)</option>
+                        <option value="1/1">1:1 (Vuông)</option>
+                    </select>
+                    
+                    <div class="ratio-presets" id="ratioPresets">
+                        <button class="ratio-btn" data-ratio="9/20">20:9</button>
+                        <button class="ratio-btn active" data-ratio="9/19.5">19.5:9</button>
+                        <button class="ratio-btn" data-ratio="9/19">19:9</button>
+                        <button class="ratio-btn" data-ratio="9/18">18:9</button>
+                        <button class="ratio-btn" data-ratio="2/3">3:2</button>
+                        <button class="ratio-btn" data-ratio="9/16">16:9</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">🖼️ 2. Hình nền (Background)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="bgInput" accept="image/*">
+                        <label for="bgInput" class="file-input-label">Chọn hình nền</label>
+                    </div>
+                    <p class="preview-text" id="bgPreview">Chưa chọn file</p>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">📋 3. Thời khóa biểu (Timetable)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="ttInput" accept="image/*">
+                        <label for="ttInput" class="file-input-label">Chọn ảnh TKB</label>
+                    </div>
+                    <p class="preview-text" id="ttPreview">Chưa chọn file</p>
+                </div>
+
+                <div class="advanced-options">
+                    <div class="toggle-advanced" onclick="toggleAdvanced()">
+                        <span>⚙️ Tùy chọn nâng cao</span>
+                        <span id="toggleIcon">▼</span>
+                    </div>
+                    
+                    <div class="advanced-content" id="advancedContent">
+                        <div class="control-group">
+                            <label class="control-label">Vị trí TKB</label>
+                            <div class="position-grid" id="positionGrid">
+                                <button class="pos-btn" data-pos="top-left">↖</button>
+                                <button class="pos-btn" data-pos="top-center">↑</button>
+                                <button class="pos-btn" data-pos="top-right">↗</button>
+                                <button class="pos-btn" data-pos="middle-left">←</button>
+                                <button class="pos-btn active" data-pos="center">•</button>
+                                <button class="pos-btn" data-pos="middle-right">→</button>
+                                <button class="pos-btn" data-pos="bottom-left">↙</button>
+                                <button class="pos-btn" data-pos="bottom-center">↓</button>
+                                <button class="pos-btn" data-pos="bottom-right">↘</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Kích thước TKB <span class="slider-value" id="sizeValue">70%</span></label>
+                            <div class="slider-container">
+                                <input type="range" id="sizeSlider" min="20" max="95" value="70">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Bo góc (Border Radius) <span class="slider-value" id="radiusValue">20px</span></label>
+                            <div class="slider-container">
+                                <input type="range" id="radiusSlider" min="0" max="50" value="20">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Độ trong suốt (Opacity) <span class="slider-value" id="opacityValue">100%</span></label>
+                            <div class="slider-container">
+                                <input type="range" id="opacitySlider" min="10" max="100" value="100">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Padding <span class="slider-value" id="paddingValue">20px</span></label>
+                            <div class="slider-container">
+                                <input type="range" id="paddingSlider" min="0" max="100" value="20">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Đổ bóng (Shadow)</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="shadowCheck" checked>
+                                <label for="shadowCheck">Bật đổ bóng</label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Viền (Border)</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="borderCheck" checked>
+                                <label for="borderCheck">Bật viền trắng</label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Màu nền phụ (nếu TKB trong suốt)</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="bgColor" value="#ffffff">
+                                <span>Màu nền</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Chế độ hòa trộn (Blend Mode)</label>
+                            <select id="blendMode">
+                                <option value="normal">Normal</option>
+                                <option value="multiply">Multiply</option>
+                                <option value="screen">Screen</option>
+                                <option value="overlay">Overlay</option>
+                                <option value="soft-light">Soft Light</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generateWallpaper()">
+                    ✨ Tạo Wallpaper
+                </button>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-header">
+                    <h2 class="preview-title">Xem trước</h2>
+                    <button class="download-btn" id="downloadBtn" onclick="downloadWallpaper()">
+                        ⬇️ Tải xuống
+                    </button>
+                </div>
+                <div class="canvas-container" id="canvasContainer">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p>Chọn hình nền và thời khóa biểu,<br>sau đó nhấn "Tạo Wallpaper"</p>
+                    </div>
+                    <canvas id="previewCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Đang xử lý...</p>
+    </div>
+
+    <script>
+        let bgImage = null;
+        let ttImage = null;
+        let currentRatio = { width: 9, height: 19.5 };
+        let currentPosition = 'center';
+        
+        // File inputs
+        document.getElementById('bgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('bgPreview').textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    bgImage = new Image();
+                    bgImage.onload = function() {
+                        console.log('Background loaded:', bgImage.width, 'x', bgImage.height);
+                    };
+                    bgImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('ttInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('ttPreview').textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    ttImage = new Image();
+                    ttImage.onload = function() {
+                        console.log('Timetable loaded:', ttImage.width, 'x', ttImage.height);
+                    };
+                    ttImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Ratio buttons
+        document.querySelectorAll('.ratio-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const ratio = this.dataset.ratio.split('/');
+                currentRatio = { width: parseFloat(ratio[0]), height: parseFloat(ratio[1]) };
+                document.getElementById('ratioSelect').value = this.dataset.ratio;
+            });
+        });
+
+        // Ratio select
+        document.getElementById('ratioSelect').addEventListener('change', function() {
+            if (this.value !== 'custom') {
+                const ratio = this.value.split('/');
+                currentRatio = { width: parseFloat(ratio[0]), height: parseFloat(ratio[1]) };
+                document.querySelectorAll('.ratio-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.ratio === this.value);
+                });
+            }
+        });
+
+        // Position buttons
+        document.querySelectorAll('.pos-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPosition = this.dataset.pos;
+            });
+        });
+
+        // Sliders
+        document.getElementById('sizeSlider').addEventListener('input', function() {
+            document.getElementById('sizeValue').textContent = this.value + '%';
+        });
+
+        document.getElementById('radiusSlider').addEventListener('input', function() {
+            document.getElementById('radiusValue').textContent = this.value + 'px';
+        });
+
+        document.getElementById('opacitySlider').addEventListener('input', function() {
+            document.getElementById('opacityValue').textContent = this.value + '%';
+        });
+
+        document.getElementById('paddingSlider').addEventListener('input', function() {
+            document.getElementById('paddingValue').textContent = this.value + 'px';
+        });
+
+        function toggleAdvanced() {
+            const content = document.getElementById('advancedContent');
+            const icon = document.getElementById('toggleIcon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+
+        function showLoading() {
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('loading').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('loading').classList.remove('show');
+        }
+
+        function getPosition(canvasWidth, canvasHeight, ttWidth, ttHeight, padding) {
+            const positions = {
+                'top-left': { x: padding, y: padding },
+                'top-center': { x: (canvasWidth - ttWidth) / 2, y: padding },
+                'top-right': { x: canvasWidth - ttWidth - padding, y: padding },
+                'middle-left': { x: padding, y: (canvasHeight - ttHeight) / 2 },
+                'center': { x: (canvasWidth - ttWidth) / 2, y: (canvasHeight - ttHeight) / 2 },
+                'middle-right': { x: canvasWidth - ttWidth - padding, y: (canvasHeight - ttHeight) / 2 },
+                'bottom-left': { x: padding, y: canvasHeight - ttHeight - padding },
+                'bottom-center': { x: (canvasWidth - ttWidth) / 2, y: canvasHeight - ttHeight - padding },
+                'bottom-right': { x: canvasWidth - ttWidth - padding, y: canvasHeight - ttHeight - padding }
+            };
+            return positions[currentPosition] || positions['center'];
+        }
+
+        function generateWallpaper() {
+            if (!bgImage || !ttImage) {
+                alert('Vui lòng chọn cả hình nền và thời khóa biểu!');
+                return;
+            }
+
+            showLoading();
+
+            setTimeout(() => {
+                const canvas = document.getElementById('previewCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate dimensions based on ratio
+                const baseWidth = 1080; // Base width for high quality
+                const ratio = currentRatio.height / currentRatio.width;
+                const canvasWidth = baseWidth;
+                const canvasHeight = Math.round(baseWidth * ratio);
+                
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                
+                // Draw background with cover mode (zoom to fill)
+                const bgScale = Math.max(canvasWidth / bgImage.width, canvasHeight / bgImage.height);
+                const bgScaledWidth = bgImage.width * bgScale;
+                const bgScaledHeight = bgImage.height * bgScale;
+                const bgX = (canvasWidth - bgScaledWidth) / 2;
+                const bgY = (canvasHeight - bgScaledHeight) / 2;
+                
+                ctx.drawImage(bgImage, bgX, bgY, bgScaledWidth, bgScaledHeight);
+                
+                // Get settings
+                const ttSizePercent = parseInt(document.getElementById('sizeSlider').value) / 100;
+                const borderRadius = parseInt(document.getElementById('radiusSlider').value);
+                const opacity = parseInt(document.getElementById('opacitySlider').value) / 100;
+                const padding = parseInt(document.getElementById('paddingSlider').value);
+                const hasShadow = document.getElementById('shadowCheck').checked;
+                const hasBorder = document.getElementById('borderCheck').checked;
+                const bgColor = document.getElementById('bgColor').value;
+                const blendMode = document.getElementById('blendMode').value;
+                
+                // Calculate timetable dimensions
+                const maxTTWidth = canvasWidth * ttSizePercent;
+                const maxTTHeight = canvasHeight * ttSizePercent;
+                
+                const ttScale = Math.min(
+                    maxTTWidth / ttImage.width,
+                    maxTTHeight / ttImage.height
+                );
+                
+                const ttWidth = ttImage.width * ttScale;
+                const ttHeight = ttImage.height * ttScale;
+                
+                const pos = getPosition(canvasWidth, canvasHeight, ttWidth, ttHeight, padding);
+                
+                // Save context
+                ctx.save();
+                
+                // Create rounded rectangle path
+                ctx.beginPath();
+                roundRect(ctx, pos.x, pos.y, ttWidth, ttHeight, borderRadius);
+                ctx.closePath();
+                
+                // Clip to rounded rectangle
+                ctx.clip();
+                
+                // Apply blend mode
+                ctx.globalCompositeOperation = blendMode;
+                
+                // Draw shadow if enabled
+                if (hasShadow) {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                    ctx.shadowBlur = 20;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 10;
+                }
+                
+                // Draw background color for timetable area if opacity < 1
+                if (opacity < 1) {
+                    ctx.fillStyle = bgColor;
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillRect(pos.x, pos.y, ttWidth, ttHeight);
+                    ctx.globalAlpha = 1;
+                }
+                
+                // Draw timetable
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(ttImage, pos.x, pos.y, ttWidth, ttHeight);
+                
+                // Restore context
+                ctx.restore();
+                
+                // Draw border if enabled
+                if (hasBorder) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    roundRect(ctx, pos.x, pos.y, ttWidth, ttHeight, borderRadius);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                
+                // Show canvas and download button
+                document.querySelector('.empty-state').style.display = 'none';
+                canvas.style.display = 'block';
+                document.getElementById('downloadBtn').classList.add('show');
+                
+                hideLoading();
+            }, 100);
+        }
+
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+        }
+
+        function downloadWallpaper() {
+            const canvas = document.getElementById('previewCanvas');
+            const link = document.createElement('a');
+            link.download = `wallpaper-tkb-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
+        // Auto-generate when both images are loaded (optional)
+        let checkInterval = setInterval(() => {
+            if (bgImage && ttImage && bgImage.complete && ttImage.complete) {
+                // Uncomment below to auto-generate
+                // generateWallpaper();
+                // clearInterval(checkInterval);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
